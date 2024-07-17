@@ -1,0 +1,220 @@
+---
+title: "Untitled"
+output: pdf_document
+date: "2023-10-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Grad_Admission <- read.csv("~/Desktop/projectn/Grad_Admission.csv")
+
+## Including Plots
+
+You can also embed plots, for example:
+
+## Questions 1 & 2
+```{r}
+Grad_Admission <- read.csv("~/Desktop/projectn/Grad_Admission.csv")
+head(Grad_Admission, 10)
+
+
+```
+
+## Question 3
+```{r}
+summary(Grad_Admission[, c("ID", "GRE", "TOEFL")])
+
+```
+## Question 4 - Histograms explained in PDF submission
+```{r}
+
+
+hist(Grad_Admission$Chance, main="Chance", xlab="Chance", col="orange")
+hist(Grad_Admission$CGPA, main="CGPA", xlab="CGPA", col="orange")
+hist(Grad_Admission$GRE, main="GRE", xlab="GRE", col="orange")
+hist(Grad_Admission$TOEFL, main="TOEFL", xlab="TOEFL", col="orange")
+
+
+```
+
+
+## Question 5 - Scatterplots explained in PDF submission
+```{r}
+library(ggplot2)
+
+ggplot(Grad_Admission, aes(x = GRE, y = Chance)) +
+  geom_point() +
+  labs(title = "GRE vs. Chance",
+       x = "GRE",
+       y = "Chance")
+
+ggplot(Grad_Admission, aes(x = TOEFL, y = Chance)) +
+  geom_point() +
+  labs(title = "TOEFL vs. Chance",
+       x = "TOEFL",
+       y = "Chance")
+
+ggplot(Grad_Admission, aes(x = Urate, y = Chance)) +
+  geom_point() +
+  labs(title = "Urate vs. Chance",
+       x = "Urate",
+       y = "Chance")
+
+ggplot(Grad_Admission, aes(x = SOP, y = Chance)) +
+  geom_point() +
+  labs(title = "SOP vs. Chance",
+       x = "SOP",
+       y = "Chance")
+
+ggplot(Grad_Admission, aes(x = LOR, y = Chance)) +
+  geom_point() +
+  labs(title = "LOR vs. Chance",
+       x = "LOR",
+       y = "Chance")
+
+ggplot(Grad_Admission, aes(x = CGPA, y = Chance)) +
+  geom_point() +
+  labs(title = "CGPA vs. Chance",
+       x = "CGPA",
+       y = "Chance")
+```
+## Question 6 - Explained in PDF submission
+
+## Question 7 - Linearity Assumptions explained in PDF submission
+```{r}
+library(car)
+
+linreg <- lm(Chance ~ GRE + TOEFL + Urate + SOP + LOR + CGPA, data = Grad_Admission)
+plot(linreg, 1)
+plot(linreg, 2)
+plot(linreg, 3)
+vif_values <- car::vif(linreg)
+print(vif_values)
+
+```
+
+## Question 8 - 3 independent variable and model explained in PDF submission
+
+```{r}
+model <- lm(Chance ~ GRE + TOEFL + CGPA, data = Grad_Admission)
+summary(model)
+
+```
+
+## Question 9 - Correlation and slope explained in PDF submission
+```{r}
+correlation_table <- cor(Grad_Admission[, c("GRE", "TOEFL", "Urate", "SOP", "LOR", "CGPA", "Chance")])
+
+# Print the correlation table
+print(correlation_table)
+
+```
+## Question 10
+```{r}
+corr_gre = cor.test(Grad_Admission$GRE, Grad_Admission$Chance, method = 'pearson')
+corr_gre
+corr_toefl = cor.test(Grad_Admission$TOEFL, Grad_Admission$Chance, method = 'pearson')
+corr_toefl
+corr_urate = cor.test(Grad_Admission$Urate, Grad_Admission$Chance, method = 'pearson')
+corr_urate
+corr_sop = cor.test(Grad_Admission$SOP, Grad_Admission$Chance, method = 'pearson')
+corr_sop
+corr_lor = cor.test(Grad_Admission$LOR, Grad_Admission$Chance, method = 'pearson')
+corr_lor
+corr_cgpa = cor.test(Grad_Admission$CGPA, Grad_Admission$Chance, method = 'pearson')
+corr_cgpa
+```
+
+## Question 11
+```{r}
+var <- c("GRE", "TOEFL", "Urate", "SOP", "LOR", "CGPA")
+val <- numeric(length(var))
+
+for (i in seq_along(var)) {
+  variable <- var[i]
+  formula <- as.formula(paste("Chance ~", variable))
+  
+  model <- lm(formula, data = Grad_Admission)
+  p_value <- summary(model)$coefficients[2, "Pr(>|t|)"]
+  
+  val[i] <- p_value < 0.05
+  cat("Test for", variable, ": p-value =", p_value, "\n\n")
+}
+
+for (i in seq_along(var)) {
+  if (val[i] == 1) {
+    cat(var[i], "is statistically significant\n")
+  }
+}
+
+```
+
+## Question 12 - Analysis of ANOVA tables explained in PDF submission
+```{r}
+var <- c("GRE", "TOEFL", "Urate", "SOP", "LOR", "CGPA")
+rval <- numeric(length(var))
+
+for (i in seq_along(var)) {
+  variable <- var[i]
+  formula <- as.formula(paste("Chance ~", variable))
+  
+  model <- lm(formula, data = Grad_Admission)
+  rval[i] <- summary(model)$r.squared
+  
+  cat("R^2 value for", variable, "is:", rval[i], "\n")
+}
+
+model_CGPA <- lm(Chance ~ CGPA, data = Grad_Admission)
+model_GRE <- lm(Chance ~ GRE, data = Grad_Admission)
+
+anova_CGPA <- anova(model_CGPA)
+print("CGPA ANOVA Table:")
+print(anova_CGPA)
+
+anova_GRE <- anova(model_GRE)
+print("GRE ANOVA Table:")
+print(anova_GRE)
+
+```
+
+
+## Question 13 - Analysis on PDF submission
+```{r}
+
+model <- lm(Chance ~ GRE + TOEFL + Urate + SOP + LOR + CGPA, data = Grad_Admission)
+summary(model)
+
+```
+
+
+## Question 14 - Analysis on PDF submission
+```{r}
+
+model_updated <- lm(Chance ~ GRE + TOEFL + LOR + CGPA, data = Grad_Admission)
+summary(model_updated)
+
+```
+
+## Question 15
+```{r}
+x <- predict(reduced_model, interval = "confidence")
+x <- cbind(Grad_Admission$Chance, x)
+options(max.print = 400)
+print(x)
+
+```
+## Question 16 - Final equation in PDF submission
+```{r}
+
+lm(formula = Chance ~ GRE + TOEFL + LOR + CGPA, data = Grad_Admission)
+
+```
+## Question 17 - Explained in PDF submission
