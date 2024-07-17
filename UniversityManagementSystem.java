@@ -1,5 +1,5 @@
-// Project 1
-// Karthik Kappagantu, Kris Lacey
+
+// Karthik Kappagantu
 
 import java.util.Scanner;
 
